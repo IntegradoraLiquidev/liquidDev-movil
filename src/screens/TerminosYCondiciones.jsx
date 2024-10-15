@@ -1,21 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 
-const TerminosYCondiciones = ({ navigation }) => {
-  const handleAccept = () => {
-    // Navegar a la pantalla de Home al aceptar
-    navigation.navigate('Home');
-  };
-
-  const handleReject = () => {
-    // Mostrar alerta al rechazar
-    Alert.alert(
-      'Términos Rechazados',
-      'Debes aceptar los términos para utilizar todas las funcionalidades de la aplicación.',
-      [{ text: 'Entendido', onPress: () => null }] // No hacer nada, permanecer en la misma pantalla
-    );
-  };
-
+const TerminosYCondiciones = ({ onAccept, onReject }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Términos y Condiciones</Text>
@@ -80,12 +66,11 @@ const TerminosYCondiciones = ({ navigation }) => {
         contactoliquidev@gmail.com
       </Text>
 
-      {/* Botones de Aceptar y Rechazar */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleAccept}>
+        <TouchableOpacity style={styles.button} onPress={onAccept}>
           <Text style={styles.buttonText}>Aceptar</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleReject}>
+        <TouchableOpacity style={styles.button} onPress={onReject}>
           <Text style={styles.buttonText}>Rechazar</Text>
         </TouchableOpacity>
       </View>
@@ -124,7 +109,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#003366',
     borderRadius: 5,
     padding: 10,
-    width: '40%', // Ancho del botón
+    width: '40%',
     alignItems: 'center',
   },
   buttonText: {

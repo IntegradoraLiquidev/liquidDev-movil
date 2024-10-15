@@ -32,7 +32,7 @@ export default function HomeScreen({  }) {
     Alert.alert(
       'Términos Rechazados',
       'Debes aceptar los términos para utilizar todas las funcionalidades de la aplicación.',
-      [{ text: 'Intentar de nuevo', onPress: () => setModalVisible(true) }] // Reabrir el modal
+      [{ text: 'Aceptar', onPress: () => setModalVisible(true) }] // Reabrir el modal
     );
   };
 

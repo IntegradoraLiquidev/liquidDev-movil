@@ -18,6 +18,7 @@ function MyStack() {
     <Stack.Navigator>
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Servicios" component={ServiciosScreen} />
+      <Stack.Screen name="Terminos" component={TerminosYCondiciones} />
     </Stack.Navigator>
   );
 }
