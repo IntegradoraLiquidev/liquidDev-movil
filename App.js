@@ -9,10 +9,12 @@ import ServiciosScreen from './src/screens/ServiciosScreen';
 import PortafolioScreen from './src/screens/PortafolioScreen';
 import ContactoScreen from './src/screens/ContactoScreen';
 import TerminosYCondiciones from './src/screens/TerminosYCondiciones';
+import UbicacionScreen from './src/screens/ubicacionScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
+// Configuración del Stack para la navegación en Home
 function MyStack() {
   return (
     <Stack.Navigator>
@@ -38,6 +40,8 @@ export default function App() {
               iconName = 'folder';
             } else if (route.name === 'Contacto') {
               iconName = 'mail';
+            } else if (route.name === 'Ubicación') {
+              iconName = 'location';
             }
             return <Ionicons name={iconName} size={size} color={color} />;
           },
@@ -49,6 +53,7 @@ export default function App() {
         <Tab.Screen name="Servicios" component={ServiciosScreen} />
         <Tab.Screen name="Portafolio" component={PortafolioScreen} />
         <Tab.Screen name="Contacto" component={ContactoScreen} />
+        <Tab.Screen name="Ubicación" component={UbicacionScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );
