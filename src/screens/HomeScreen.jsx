@@ -1,119 +1,98 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Alert } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Animated } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import TerminosYCondiciones from './TerminosYCondiciones';
+import { useNavigation } from '@react-navigation/native';
+import * as LocalAuthentication from 'expo-local-authentication';
+import { LinearGradient } from 'expo-linear-gradient';
 
-export default function HomeScreen({  }) {
-  const [modalVisible, setModalVisible] = useState(true); // Modal visible al iniciar
-  const [termsAccepted, setTermsAccepted] = useState(false);
+export default function HomeScreen() {
+  const navigation = useNavigation();
+  const fadeAnim = new Animated.Value(0); // Valor inicial para la animación de opacidad
 
+  // Función para autenticar la huella digital
+  const handleBiometricAuth = async () => {
+    const hasHardware = await LocalAuthentication.hasHardwareAsync();
+    const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+
+    if (!hasHardware || !isEnrolled) {
+      Alert.alert("Error", "La autenticación biométrica no está disponible.");
+      return;
+    }
+
+    const result = await LocalAuthentication.authenticateAsync({
+      promptMessage: 'Usa tu huella digital para continuar',
+    });
+
+    if (result.success) {
+      navigation.navigate('Servicios');
+    } else {
+      Alert.alert("Error", "La autenticación falló.");
+    }
+  };
+
+  // Animación de entrada para el logo y el título
   useEffect(() => {
-    const checkTermsAcceptance = async () => {
-      const accepted = await AsyncStorage.getItem('termsAccepted');
-      if (accepted === 'true') {
-        setTermsAccepted(true);
-        setModalVisible(true); // Cerrar modal si ya se aceptaron los términos
-      } else {
-        setModalVisible(true); // Mostrar modal si no se han aceptado los términos
-      }
-    };
-
-    checkTermsAcceptance();
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 2000,
+      useNativeDriver: true,
+    }).start();
   }, []);
 
-  const handleAccept = async () => {
-    await AsyncStorage.setItem('termsAccepted', 'true'); // Guardar aceptación
-    setTermsAccepted(true);
-    setModalVisible(false); // Cerrar modal
-  };
-
-  const handleReject = () => {
-    Alert.alert(
-      'Términos Rechazados',
-      'Debes aceptar los términos para utilizar todas las funcionalidades de la aplicación.',
-      [{ text: 'Aceptar', onPress: () => setModalVisible(true) }] // Reabrir el modal
-    );
-  };
-
-  const renderTermsModal = () => (
-    <Modal animationType="slide" transparent={true} visible={modalVisible}>
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          <TerminosYCondiciones onAccept={handleAccept} onReject={handleReject} />
-        </View>
-      </View>
-    </Modal>
-  );
-
   return (
-    <View style={styles.container}>
-      {/* Modal de Términos y Condiciones */}
-      {renderTermsModal()}
-
-      {/* Interfaz principal si se han aceptado los términos */}
-      {termsAccepted && (
-        <>
-          {/* Logo */}
-          <View style={styles.logoContainer}>
-            <FontAwesome5 name="horse-head" size={100} color="#003366" />
-          </View>
-
-          <Text style={styles.title}>Liquid</Text>
-          <Text style={styles.subtitle}>Dev</Text>
-
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Servicios')}>
-            <Text style={styles.buttonText}>Servicios</Text>
-          </TouchableOpacity>
-        </>
-      )}
-    </View>
+    <LinearGradient colors={['#003366', '#FFFF']} style={styles.background}>
+      <View style={styles.container}>
+        <Animated.View style={{ ...styles.logoContainer, opacity: fadeAnim }}>
+          <FontAwesome5 name="horse-head" size={100} color="#FFFF" />
+        </Animated.View>
+        <Animated.Text style={{ ...styles.title, opacity: fadeAnim }}>Liquid</Animated.Text>
+        <Animated.Text style={{ ...styles.subtitle, opacity: fadeAnim }}>Dev</Animated.Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleBiometricAuth} // Inicia la autenticación biométrica
+        >
+          <Text style={styles.buttonText}>Usar huella digital</Text>
+        </TouchableOpacity>
+      </View>
+    </LinearGradient>
   );
 }
 
+// Estilos
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F0F0F0', // Color de fondo claro
   },
   logoContainer: {
     marginBottom: 20,
+    transform: [{ scale: 1.2 }],
   },
   title: {
-    fontSize: 48, // Tamaño más grande
-    color: '#003366', // Color del texto
-    fontWeight: 'bold', // Negrita
-    fontStyle: 'italic', // Cursiva
+    fontSize: 48,
+    color: '#ffff', // Amarillo dorado para el título
+    fontWeight: 'bold',
+    fontStyle: 'italic',
   },
   subtitle: {
-    fontSize: 24, // Tamaño del subtítulo
-    color: '#003366', // Color del texto
+    fontSize: 24,
+    color: '#ffff', // Amarillo dorado para el subtítulo
     marginBottom: 20,
   },
   button: {
-    backgroundColor: '#003366', // Color azul para el botón
+    backgroundColor: '#003366', // Azul oscuro para el botón
     borderRadius: 10,
     padding: 15,
     alignItems: 'center',
-    width: '70%', // Ancho del botón
+    width: '70%',
   },
   buttonText: {
-    fontSize: 16, // Tamaño de texto más pequeño
-    color: '#F2F2F2', // Color claro para el texto del botón
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo semitransparente
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    width: '80%',
-    alignItems: 'center',
+    fontSize: 16,
+    color: '#ffff', // Amarillo dorado para el texto del botón
+    fontWeight: '600',
   },
 });

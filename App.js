@@ -18,9 +18,9 @@ const Stack = createStackNavigator();
 function MyStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="Servicios" component={ServiciosScreen} />
+      <Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false }}/>
       <Stack.Screen name="Terminos" component={TerminosYCondiciones} />
+      <Stack.Screen name="Servicios" component={ServiciosScreen} options={{ tabBarStyle: { display: 'none' } }} />
     </Stack.Navigator>
   );
 }
@@ -49,11 +49,11 @@ export default function App() {
           tabBarInactiveTintColor: 'gray',
         })}
       >
-        <Tab.Screen name="Home" component={MyStack} />
-        <Tab.Screen name="Servicios" component={ServiciosScreen} />
-        <Tab.Screen name="Portafolio" component={PortafolioScreen} />
-        <Tab.Screen name="Contacto" component={ContactoScreen} />
-        <Tab.Screen name="Ubicación" component={UbicacionScreen} />
+        <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarStyle: { display: 'none' },  }}/>
+        <Tab.Screen name="Servicios" component={ServiciosScreen} options={{headerShown: false }} />
+        <Tab.Screen name="Portafolio" component={PortafolioScreen} options={{headerShown: false }}/>
+        <Tab.Screen name="Contacto" component={ContactoScreen} options={{headerShown: false }}/>
+        <Tab.Screen name="Ubicación" component={UbicacionScreen} options={{headerShown: false }}/>
       </Tab.Navigator>
     </NavigationContainer>
   );

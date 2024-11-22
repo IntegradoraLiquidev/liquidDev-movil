@@ -1,23 +1,31 @@
 import React, { useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Pressable } from 'react-native';
-import { FontAwesome5, AntDesign } from '@expo/vector-icons';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Pressable, Linking, Animated } from 'react-native';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 export default function ServicesScreen() {
   const scrollViewRef = useRef(null);
-  const [showArrow, setShowArrow] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedService, setSelectedService] = useState('');
+  const [selectedService, setSelectedService] = useState({});
+  const [animatedValue] = useState(new Animated.Value(1));
+  
+  const services = [
+    { name: 'Desarrollo de Aplicaciones Móviles Personalizadas', info: 'Aplicaciones diseñadas para dispositivos móviles según tus necesidades.' },
+    { name: 'Desarrollo de Aplicaciones Web', info: 'Web apps rápidas y seguras para tu negocio.' },
+    { name: 'Automatización de Procesos Empresariales', info: 'Optimiza procesos y mejora la eficiencia operativa.' },
+    { name: 'Consultoría de Sistemas', info: 'Asesoramiento profesional para mejorar tus sistemas.' },
+    { name: 'Desarrollo de Software a Medida', info: 'Software personalizado para tus necesidades específicas.' },
+    { name: 'Integración de APIs', info: 'Conectamos tus sistemas con soluciones de terceros.' },
+    { name: 'Soporte Técnico y Mantenimiento', info: 'Soporte continuo para garantizar el buen funcionamiento.' },
+  ];
 
-  const handleScroll = (event) => {
-    const { contentOffset, layoutMeasurement } = event.nativeEvent;
-    const isAtTop = contentOffset.y === 0;
-    const isAtBottom = contentOffset.y + layoutMeasurement.height >= event.nativeEvent.contentSize.height;
-
-    setShowArrow(!isAtTop && !isAtBottom);
-  };
-
-  const scrollToBottom = () => {
-    scrollViewRef.current.scrollToEnd({ animated: true });
+  const messages = {
+    'Desarrollo de Aplicaciones Móviles Personalizadas': 'Hola, estoy interesado en el desarrollo de aplicaciones móviles personalizadas.',
+    'Desarrollo de Aplicaciones Web': 'Hola, quiero saber más sobre el desarrollo de aplicaciones web.',
+    'Automatización de Procesos Empresariales': 'Hola, me gustaría información sobre la automatización de procesos empresariales.',
+    'Consultoría de Sistemas': 'Hola, estoy interesado en sus servicios de consultoría de sistemas.',
+    'Desarrollo de Software a Medida': 'Hola, necesito información sobre desarrollo de software a medida.',
+    'Integración de APIs': 'Hola, me gustaría saber más sobre la integración de APIs.',
+    'Soporte Técnico y Mantenimiento': 'Hola, quiero saber más sobre su soporte técnico y mantenimiento.',
   };
 
   const handleMoreInfo = (service) => {
@@ -29,58 +37,68 @@ export default function ServicesScreen() {
     setModalVisible(false);
   };
 
+  const handleWhatsApp = () => {
+    const message = messages[selectedService.name];
+    const url = `whatsapp://send?text=${encodeURIComponent(message)}&phone=6182064292`;
+    Linking.openURL(url).catch(err => console.error("Error al abrir WhatsApp", err));
+  };
+
+  const animateButton = () => {
+    Animated.sequence([
+      Animated.timing(animatedValue, {
+        toValue: 1.1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.spring(animatedValue, {
+        toValue: 1,
+        friction: 2,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
   return (
     <View style={styles.container}>
-      <ScrollView
-        ref={scrollViewRef}
-        contentContainerStyle={styles.scrollViewContainer}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-      >
+      <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollViewContainer}>
         <View style={styles.logoContainer}>
           <FontAwesome5 name="horse-head" size={50} color="#003366" />
         </View>
-
         <Text style={styles.title}>NUESTROS SERVICIOS</Text>
-
-        {/* Botones sin ícono de información */}
-        {[
-          'Desarrollo de Aplicaciones Móviles Personalizadas',
-          'Desarrollo de Aplicaciones Web',
-          'Automatización de Procesos Empresariales',
-          'Consultoría de Sistemas',
-          'Desarrollo de Software a Medida',
-          'Integración de APIs',
-          'Soporte Técnico y Mantenimiento',
-        ].map((service, index) => (
-          <TouchableOpacity key={index} style={styles.card} onPress={() => handleMoreInfo(service)}>
-            <Text style={styles.buttonText}>{service}</Text>
+        {services.map((service, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.card}
+            onPress={() => { handleMoreInfo(service); animateButton(); }}
+            activeOpacity={0.7}
+          >
+            <Animated.View style={{ transform: [{ scale: animatedValue }] }}>
+              <Text style={styles.buttonText}>{service.name}</Text>
+            </Animated.View>
           </TouchableOpacity>
         ))}
-
-        {showArrow && (
-          <TouchableOpacity onPress={scrollToBottom} style={styles.downArrowContainer}>
-            <AntDesign name="downcircle" size={24} color="black" style={styles.downArrow} />
-          </TouchableOpacity>
-        )}
       </ScrollView>
 
       {/* Modal para más información */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={closeModal}
-      >
+      <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={closeModal}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Información sobre: {selectedService}</Text>
-            <Pressable style={[styles.button, styles.buttonClose]} onPress={closeModal}>
-              <Text style={styles.textStyle}>Cerrar</Text>
+            <Text style={styles.modalText}>Información sobre: {selectedService.name}</Text>
+            <Text style={styles.modalDescription}>{selectedService.info}</Text>
+            <Pressable style={[styles.button, styles.buttonContact]} onPress={handleWhatsApp}>
+              <FontAwesome5 name="whatsapp" size={20} color="#FFFFFF" />
+              <Text style={styles.contactText}> Contactar por WhatsApp</Text>
+            </Pressable>
+            <Pressable style={styles.closeButton} onPress={closeModal}>
+              <Text style={styles.closeText}>✖</Text>
             </Pressable>
           </View>
         </View>
       </Modal>
+
+      <TouchableOpacity style={styles.whatsappButton} onPress={handleWhatsApp}>
+        <FontAwesome5 name="whatsapp" size={30} color="#FFFFFF" />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -88,7 +106,7 @@ export default function ServicesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F0F8FF',
   },
   scrollViewContainer: {
     flexGrow: 1,
@@ -102,79 +120,96 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#003366',
     marginBottom: 30,
   },
   card: {
     width: '90%',
-    backgroundColor: '#003366', // Fondo azul para las tarjetas
+    backgroundColor: '#FFFF', // Fondo amarillo
     borderRadius: 10,
     padding: 20,
     marginBottom: 20,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowColor: '#000', // Sombra para destacar
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    transform: [{ scale: 1 }],
-    transition: 'transform 0.2s', // Animación para interacción
-  },
-  cardActive: {
-    transform: [{ scale: 1.05 }],
   },
   buttonText: {
-    fontSize: 16,
-    color: '#fff', // Texto blanco
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#003366',
     textAlign: 'center',
-  },
-  downArrowContainer: {
-    marginTop: 10,
-    alignItems: 'center',
-  },
-  downArrow: {
-    marginTop: 10,
   },
   centeredView: {
     flex: 1,
-    justifyContent: 'center', // Centra el modal verticalmente
-    alignItems: 'center', // Centra el modal horizontalmente
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscuro semitransparente
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalView: {
-    width: '80%', // Modal más pequeño
-    backgroundColor: '#FFDD57', // Color llamativo para el modal
+    width: '80%',
+    backgroundColor: '#FFFFFF',
     borderRadius: 10,
     padding: 20,
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
   },
   modalText: {
+    marginBottom: 10,
+    textAlign: 'center',
+    fontSize: 18,
+    color: '#000',
+    fontWeight: 'bold',
+  },
+  modalDescription: {
     marginBottom: 15,
     textAlign: 'center',
     fontSize: 16,
-    color: '#000',
+    color: '#555',
   },
-  buttonClose: {
-    backgroundColor: '#003366',
-    padding: 10,
+  button: {
     borderRadius: 5,
+    padding: 10,
+    margin: 5,
   },
-  textStyle: {
-    color: 'white',
+  buttonContact: {
+    backgroundColor: '#25D366',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+  },
+  contactText: {
+    color: '#FFFFFF',
     fontWeight: 'bold',
-    textAlign: 'center',
+    fontSize: 16,
+    marginLeft: 8,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+  },
+  closeText: {
+    fontSize: 24,
+    color: '#003366',
+  },
+  whatsappButton: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    backgroundColor: '#25D366',
+    borderRadius: 50,
+    padding: 10,
+    elevation: 5,
   },
 });
