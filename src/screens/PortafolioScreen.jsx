@@ -56,7 +56,9 @@ export default function PortafolioScreen() {
       <Text style={styles.invitationText}>
         Descubre algunos de los proyectos que hemos desarrollado. Estamos comprometidos en ofrecer soluciones tecnológicas de calidad.
       </Text>
-
+      <Text style={styles.invitationText}>
+        Descubre algunos de los proyectos que hemos desarrollado. Estamos comprometidos en ofrecer soluciones tecnológicas de calidad.
+      </Text>
       <View style={styles.projectsContainer}>
         {projects.map((project, index) => (
           <ProjectCard key={index} project={project} onMoreInfo={() => handleMoreInfo(project)} />
