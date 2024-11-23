@@ -40,10 +40,10 @@ export default function HomeScreen() {
   }, []);
 
   return (
-    <LinearGradient colors={['#003366', '#FFFF']} style={styles.background}>
+    <LinearGradient colors={['#003366', '#FFF']} style={styles.background}>
       <View style={styles.container}>
         <Animated.View style={{ ...styles.logoContainer, opacity: fadeAnim }}>
-          <FontAwesome5 name="horse-head" size={100} color="#FFFF" />
+          <FontAwesome5 name="horse-head" size={100} color="#FFF" />
         </Animated.View>
         <Animated.Text style={{ ...styles.title, opacity: fadeAnim }}>Liquid</Animated.Text>
         <Animated.Text style={{ ...styles.subtitle, opacity: fadeAnim }}>Dev</Animated.Text>
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 48,
-    color: '#ffff', // Amarillo dorado para el título
+    color: '#fff', // Amarillo dorado para el título
     fontWeight: 'bold',
     fontStyle: 'italic',
   },
@@ -93,6 +93,6 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     color: '#ffff', // Amarillo dorado para el texto del botón
-    fontWeight: '600',
+    fontWeight: 'bold',
   },
 });

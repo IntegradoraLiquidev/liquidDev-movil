@@ -46,7 +46,7 @@ export default function ServicesScreen() {
   const animateButton = () => {
     Animated.sequence([
       Animated.timing(animatedValue, {
-        toValue: 1.1,
+        toValue: 1,
         duration: 100,
         useNativeDriver: true,
       }),
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: 'bold',
     color: '#003366',
     textAlign: 'center',
   },
